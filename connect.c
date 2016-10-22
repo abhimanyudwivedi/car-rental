@@ -8,7 +8,7 @@
 
 static char *host = "localhost";
 static char *user = "root";
-static char *pass = "abhimanyu";
+static char *pass = "";
 static char *dbname = "first_project";
 unsigned int port = 3306;
 static char *unix_socket = NULL;
