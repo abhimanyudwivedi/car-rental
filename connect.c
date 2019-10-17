@@ -16,6 +16,7 @@ unsigned int flag = 0;
 
 void finish_with_error(MYSQL *conn)
 {
+//The function is used for updating mysql
   fprintf(stderr, "%s\n", mysql_error(conn));
   mysql_close(conn);    
 }
@@ -575,6 +576,7 @@ int main()
 						 int temp=0;
 						 while(row[3][i] != '\0')
 						 {
+							//this function is to calculate actual numeral value of bill
 						 	temp=temp*10;
 						 	temp=temp+((int)row[3][i]-48);
 						 	i++;
