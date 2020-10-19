@@ -18,7 +18,7 @@ void finish_with_error(MYSQL *conn)
 {
 //The function is used for updating mysql
   fprintf(stderr, "%s\n", mysql_error(conn));
-  mysql_close(conn);    
+  mysql_close(conn);
 }
 int main()
 {	system("clear");
@@ -33,34 +33,47 @@ int main()
 	MYSQL_ROW row;
 	int i,num_fields;
 	MYSQL_FIELD *field;
+  int tries = 3, try_count;
+
 	conn = mysql_init(NULL);
 	if(!(mysql_real_connect(conn,host,user,pass,dbname,port,unix_socket,flag)))
 	{
 		fprintf(stderr,"\n error: %s\t [%d]",mysql_error(conn),mysql_errno(conn));
 		exit(1);
 	}
-	
+
 	fp = fopen("goodpass","r");
 	fscanf(fp,"%s",temp);
 	fclose(fp);
-	
+
 	printf("\t\t    connected to database \n");
 	printf("\t\t    type 1 for admin access any other key for guest access\n\n ");
 	scanf("%d",&n);
 	if(n==1)
 	{
-		printf("enter the admin password \n");
-		scanf("%s",passwordd);
-		if(strcmp(passwordd,temp)!=0)
-		{
-			printf("access denied. bye!");
-		}
+    // Adding 3 tries for wrong password
+    try_count = 0;
+    while(try_count < tries)
+    {
+  		printf("enter the admin password \n");
+  		scanf("%s",passwordd);
+      if(strcmp(passwordd,temp)==0)
+  		{
+  			continue;
+  		}
+  		if(strcmp(passwordd,temp)!=0)
+  		{
+  			printf("Wrong password! Please try again");
+          try_count++;
+  		}
+
+    }
 	do{
 		printf("\n\t\t    Hey! Admin what are you upto?\n\t\t    enter your choice");
 		printf("\n\t\t    1. add a car\n\t\t    2. delete a car\n\t\t    3. delete a customer detail\n\t\t    4. delete a trip\n\t\t    5. show customer details\n\t\t    6. show trip details\n\t\t    7. show car details\n\t\t    8. to change password\n\t\t    999. to exit");
 		scanf("%d",&ch);
 		int c;
-						
+
 		if(ch==1)
 		{	printf("\npress 999 to exit,any other key to continue");
 			scanf("%d",&bcost);
@@ -86,41 +99,41 @@ int main()
 			if(mysql_query(conn,query))
 			{
 				finish_with_error(conn);
-			}			
+			}
 			printf("the table after the new entry is:\n");
 			if(mysql_query(conn,"SELECT * FROM car_details"))
 					{
 						finish_with_error(conn);
 					}
 			result = mysql_store_result(conn);
-  					if (result == NULL) 
+  					if (result == NULL)
   					{
   					   printf("empty table");
   					}
 
   					 num_fields = mysql_num_fields(result);
 
-  					
-  
-  					while ((row = mysql_fetch_row(result))) 
-  					{   
-      					for(i = 0; i < num_fields; i++) 
-      					{ 
-							if (i == 0) 
-          {              
-             while(field = mysql_fetch_field(result)) 
+
+
+  					while ((row = mysql_fetch_row(result)))
+  					{
+      					for(i = 0; i < num_fields; i++)
+      					{
+							if (i == 0)
+          {
+             while(field = mysql_fetch_field(result))
              {
                 printf("%s ", field->name);
              }
-             
-             printf("\n");           
+
+             printf("\n");
           }
-      					    printf("%s\t",row[i] ? row[i] : "NULL"); 
-      					} 
-          					printf("\n"); 
+      					    printf("%s\t",row[i] ? row[i] : "NULL");
+      					}
+          					printf("\n");
   					}
-  
-  					mysql_free_result(result); 
+
+  					mysql_free_result(result);
 		}
 		if(ch==2)
 		{	printf("\npress 999 to exit,any other key to continue");
@@ -136,41 +149,41 @@ int main()
 						finish_with_error(conn);
 					}
 					result = mysql_store_result(conn);
-  					if (result == NULL) 
+  					if (result == NULL)
   					{
   					   printf("empty table");
   					}
 
   					 num_fields = mysql_num_fields(result);
 
-  					
-  
-  					while ((row = mysql_fetch_row(result))) 
-  					{   
-      					for(i = 0; i < num_fields; i++) 
-      					{ if (i == 0) 
-          					{              
-             					while(field = mysql_fetch_field(result)) 
+
+
+  					while ((row = mysql_fetch_row(result)))
+  					{
+      					for(i = 0; i < num_fields; i++)
+      					{ if (i == 0)
+          					{
+             					while(field = mysql_fetch_field(result))
              					{
                 					printf("%s ", field->name);
              					}
-             
-            			 printf("\n");           
+
+            			 printf("\n");
           			}
-      					    printf("%s\t",row[i] ? row[i] : "NULL"); 
-      					} 
-          					printf("\n"); 
+      					    printf("%s\t",row[i] ? row[i] : "NULL");
+      					}
+          					printf("\n");
   					}
-  
-  					mysql_free_result(result); 
+
+  					mysql_free_result(result);
 			printf("delete according to?\n\n 1. car_no\n\n2. car_model\n\n 3. car_type\n\n 4. pickup point\n\n");
 			scanf("%d",&c);
 			switch(c)
-			{		
+			{
 				case 1 : printf("enter the car no");
 						 scanf("%d",&det[0]);
 						 sprintf(query,"DELETE FROM car_details WHERE car_no = '%d'",det[0]);
-						 break;		
+						 break;
 				case 2 : printf("enter the car model");
 						 scanf("%s",details[0]);
 						 sprintf(query,"DELETE FROM car_details WHERE car_model = '%s'",details[0]);
@@ -189,7 +202,7 @@ int main()
 			{
 				finish_with_error(conn);
 			}
-		}			
+		}
 			if(ch==3)
 			{	printf("\npress 999 to exit right now");
 			scanf("%d",&bcost);
@@ -200,7 +213,7 @@ int main()
 				printf("\nenter the customer no");
 				scanf("%d",&det[0]);
 				sprintf(query,"DELETE FROM cust_det WHERE cno = '%d'",det[0]);
-			}	
+			}
 
 			if(ch==4)
 			{	printf("\npress 999 to exit, any other key to continue");
@@ -209,7 +222,7 @@ int main()
 			{
 				continue;
 			}
-				next1: 
+				next1:
 				printf("\nthe table already consists of:\n");
 				printf("\nthe table consists of:\n");
 			if(mysql_query(conn,"SELECT * FROM trip_details"))
@@ -217,33 +230,33 @@ int main()
 						finish_with_error(conn);
 					}
 					result = mysql_store_result(conn);
-  					if (result == NULL) 
+  					if (result == NULL)
   					{
   					   printf("empty table");
   					}
 
   					 num_fields = mysql_num_fields(result);
 
-  					
-  
-  					while ((row = mysql_fetch_row(result))) 
-  					{   
-      					for(i = 0; i < num_fields; i++) 
-      					{ if (i == 0) 
-          					{              
-             					while(field = mysql_fetch_field(result)) 
+
+
+  					while ((row = mysql_fetch_row(result)))
+  					{
+      					for(i = 0; i < num_fields; i++)
+      					{ if (i == 0)
+          					{
+             					while(field = mysql_fetch_field(result))
              					{
                 					printf("%s ", field->name);
              					}
-             
-            				 printf("\n");           
+
+            				 printf("\n");
           			}
-      					    printf("%s\t",row[i] ? row[i] : "NULL"); 
-      					} 
-          					printf("\n"); 
+      					    printf("%s\t",row[i] ? row[i] : "NULL");
+      					}
+          					printf("\n");
   					}
-  
-  					mysql_free_result(result); 
+
+  					mysql_free_result(result);
 			printf("delete according to?\n\n 1. customer's license_no\n\n2. car number\n\n ");
 			scanf("%d",&c);
 			printf("enter value : ");
@@ -251,10 +264,10 @@ int main()
 			switch(c)
 			{
 				case 1 : sprintf(query,"DELETE FROM trip_details WHERE dlno = '%s'",details[0]);
-						 break;		
+						 break;
 				case 2 : sprintf(query,"DELETE FROM trip_details WHERE car_no = '%s'",details[0]);
 						 break;
-				default : printf("wrong option"); 
+				default : printf("wrong option");
 						goto next1;
 				}
 				if(mysql_query(conn,query))
@@ -269,40 +282,40 @@ int main()
 			{
 				continue;
 			}
-			
+
 				printf("\ncustomer details");
 				if(mysql_query(conn,"SELECT * FROM cust_det"))
 					{
 						finish_with_error(conn);
 					}
 			result = mysql_store_result(conn);
-  					if (result == NULL) 
+  					if (result == NULL)
   					{
   					   printf("empty table");
   					}
 
   					 num_fields = mysql_num_fields(result);
 
-  					
-  
-  					while ((row = mysql_fetch_row(result))) 
-  					{   
-      					for(i = 0; i < num_fields; i++) 
-      					{ 
-							if (i == 0) 
-          {              
-             while(field = mysql_fetch_field(result)) 
+
+
+  					while ((row = mysql_fetch_row(result)))
+  					{
+      					for(i = 0; i < num_fields; i++)
+      					{
+							if (i == 0)
+          {
+             while(field = mysql_fetch_field(result))
              {
                 printf("%s ", field->name);
              }
-             
-             printf("\n");           
+
+             printf("\n");
           }
-      					    printf("%s\t",row[i] ? row[i] : "NULL"); 
-      					} 
-          					printf("\n"); 
+      					    printf("%s\t",row[i] ? row[i] : "NULL");
+      					}
+          					printf("\n");
   					}
-  
+
   					mysql_free_result(result);
 			}
 			if(ch==6)
@@ -312,33 +325,33 @@ int main()
 						finish_with_error(conn);
 					}
 			result = mysql_store_result(conn);
-  					if (result == NULL) 
+  					if (result == NULL)
   					{
   					   printf("empty table");
   					}
 
   					 num_fields = mysql_num_fields(result);
 
-  					
-  
-  					while ((row = mysql_fetch_row(result))) 
-  					{   
-      					for(i = 0; i < num_fields; i++) 
-      					{ 
-							if (i == 0) 
-          {              
-             while(field = mysql_fetch_field(result)) 
+
+
+  					while ((row = mysql_fetch_row(result)))
+  					{
+      					for(i = 0; i < num_fields; i++)
+      					{
+							if (i == 0)
+          {
+             while(field = mysql_fetch_field(result))
              {
                 printf("%s ", field->name);
              }
-             
-             printf("\n");           
+
+             printf("\n");
           }
-      					    printf("%s\t",row[i] ? row[i] : "NULL"); 
-      					} 
-          					printf("\n"); 
+      					    printf("%s\t",row[i] ? row[i] : "NULL");
+      					}
+          					printf("\n");
   					}
-  
+
   					mysql_free_result(result);
 			}
 			if(ch==7)
@@ -348,33 +361,33 @@ int main()
 						finish_with_error(conn);
 					}
 			result = mysql_store_result(conn);
-  					if (result == NULL) 
+  					if (result == NULL)
   					{
   					   printf("empty table");
   					}
 
   					 num_fields = mysql_num_fields(result);
 
-  					
-  
-  					while ((row = mysql_fetch_row(result))) 
-  					{   
-      					for(i = 0; i < num_fields; i++) 
-      					{ 
-							if (i == 0) 
-          {              
-             while(field = mysql_fetch_field(result)) 
+
+
+  					while ((row = mysql_fetch_row(result)))
+  					{
+      					for(i = 0; i < num_fields; i++)
+      					{
+							if (i == 0)
+          {
+             while(field = mysql_fetch_field(result))
              {
                 printf("%s ", field->name);
              }
-             
-             printf("\n");           
+
+             printf("\n");
           }
-      					    printf("%s\t",row[i] ? row[i] : "NULL"); 
-      					} 
-          					printf("\n"); 
+      					    printf("%s\t",row[i] ? row[i] : "NULL");
+      					}
+          					printf("\n");
   					}
-  
+
   					mysql_free_result(result);
 			}
 			if(ch==8)
@@ -398,20 +411,20 @@ int main()
 				{	fprintf(fp,"%s",temp1);
 					printf("password has been changed!");
 				}
-				else 
+				else
 					printf("\nunauthorized access terminated,bye!");
 			}
 			fclose(fp);
 		}
 			}
-		
+
 		}while(ch!=999);
-	}			
-		
+	}
+
 	else
 	{	int pick;
 	do{
-		
+
 		printf("\n\t\t    Welcome guest! How May I Help you?");
 		printf("\n\t\t    1.Search among all the cars\n\t\t    2.Bill generation\n\t\t    999.to exit");
 		scanf("%d",&pick);
@@ -423,33 +436,33 @@ int main()
 						finish_with_error(conn);
 					}
 			result = mysql_store_result(conn);
-  					if (result == NULL) 
+  					if (result == NULL)
   					{
   					   printf("empty table");
   					}
 
   					 num_fields = mysql_num_fields(result);
 
-  					
-  
-  					while ((row = mysql_fetch_row(result))) 
-  					{   
-      					for(i = 0; i < num_fields; i++) 
-      					{ 
-							if (i == 0) 
-          {              
-             while(field = mysql_fetch_field(result)) 
+
+
+  					while ((row = mysql_fetch_row(result)))
+  					{
+      					for(i = 0; i < num_fields; i++)
+      					{
+							if (i == 0)
+          {
+             while(field = mysql_fetch_field(result))
              {
                 printf("%s ", field->name);
              }
-             
-             printf("\n");           
+
+             printf("\n");
           }
-      					    printf("%s\t",row[i] ? row[i] : "NULL"); 
-      					} 
-          					printf("\n"); 
+      					    printf("%s\t",row[i] ? row[i] : "NULL");
+      					}
+          					printf("\n");
   					}
-  
+
   					mysql_free_result(result);
 					printf("\n\t\t    selecting a car?\n\t\t    choose a suitable option,\n\t\t    1.car model\n\t\t    2. pickup point\n  ");
 					scanf("%d",&ch);
@@ -468,14 +481,14 @@ int main()
 						while(row = mysql_fetch_row(result))
 						{
 							for(i = 0; i< num_fields; i++)
-							{   
+							{
 								printf("%s\t", row[i] ? row[i] : "NULL");
 							}
-						} 
+						}
 						printf("\nAre you sure you wanna take this car?(y/n)");
 						scanf("%s",l);
 						if(strcmp(l,"y")==0)
-						{	
+						{
 							printf("\nyour trip is being generated\n");
 							printf("\nenter your customer number");
 							scanf("%d",&det[0]);
@@ -511,7 +524,7 @@ int main()
 					}
 						if(ch==2)
 						{	printf("\nenter the pickup point ");
-							scanf("%s",details[0]);	
+							scanf("%s",details[0]);
 							sprintf(query,"SELECT * FROM car_details WHERE pickup_point = '%s' AND availability = 'y'",details[0]);
 							mysql_query(conn,query);
 						result = mysql_store_result(conn);
@@ -524,10 +537,10 @@ int main()
 						while(row = mysql_fetch_row(result))
 						{
 							for(i = 0; i< num_fields; i++)
-							{   
+							{
 								printf("%s\t", row[i] ? row[i] : "NULL");
 							}
-						} 
+						}
 						  printf("\n are you sure you wanna take this car?(y/n)");
 						  scanf("%s",l);
 						  if(strcmp(l,"y")==0)
@@ -547,7 +560,7 @@ int main()
 							sprintf(query,"SELECT * FROM car_details WHERE pickup_point = '%s' AND availability = 'y'",details[0]);
 							mysql_query(conn,query);
 							result = mysql_store_result(conn);
-							row = mysql_fetch_row(result);							
+							row = mysql_fetch_row(result);
 							sprintf(query,"INSERT INTO cust_det() VALUES('%d','%s','%s','%s','%d','%s','%s')",det[0],details[1],details[2],details[3],det[4],details[5],row[0]);
 							mysql_query(conn,query);
 							sprintf(query,"UPDATE car_details SET availability = 'n' WHERE car_model = '%s'", row[1]);
@@ -562,8 +575,8 @@ int main()
 							mysql_query(conn,query);
 						}
 					}
-					
-					mysql_free_result(result); 
+
+					mysql_free_result(result);
 					break;
 				case 2: printf("\n\t\t    The Bill is being generated");
 						 printf("\n\t\t    enter your dlno");
@@ -589,17 +602,17 @@ int main()
 						 mysql_query(conn,query);
 						 result = mysql_store_result(conn);
 						 row = mysql_fetch_row(result);
-						 j=0;temp=0;	
+						 j=0;temp=0;
 						 while(row[3][i] != '\0')
-						 {	
+						 {
 						 	printf("\n%d",temp);
 						 	temp=temp*10;
 						 	temp=temp+((int)row[3][i]-48);
 						 	i++;
 						 }
-						 printf("\ntemp%d",temp); 
+						 printf("\ntemp%d",temp);
 						 bcost = temp;
-						 tcost = bcost + dcost;						 
+						 tcost = bcost + dcost;
 						 printf("\nthe base cost is:rs.%d\n the total cost is: rs.%d ",bcost,tcost);
 						 mysql_free_result(result);
 			}
